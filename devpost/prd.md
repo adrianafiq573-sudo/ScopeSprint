@@ -86,6 +86,7 @@ Source: `scope.md > The Unique Kernel`, `scope.md > The Core Loop`, `scope.md > 
 - Each task shows an action-oriented title, a one- or two-sentence plain-English description, observable completion criteria, an approximate time estimate, and a checkbox for incomplete/complete status. Show short-task estimates in minutes and longer-task estimates in hours. Make clear these are estimates, not guarantees; compare them consistently against the available-hours budget. A task can expand or collapse to show details.
 - For the first demo, users can rename a task, add a custom task, and mark any task complete or incomplete. A custom task requires a title and a stage (Plan, Build, or Test & Polish; default Plan); description and a positive time estimate are optional. The estimate accepts a positive number and a minutes-or-hours unit. Put the new incomplete task at the end of its chosen stage without changing other task order. Custom tasks do not require completion criteria. Show the task immediately, update stage counts and project progress, and save it with that project. Keep these controls uncluttered and usable on desktop and mobile.
 - Automatically save each project's changes in browser storage. Keep projects separate and preserve them after refresh or reopening the app.
+- Allow the user to permanently delete an own project from its plan screen after a clear confirmation. Remove only that project's saved record and recent-project pointer; leave all other projects and the StudyBuddy demo untouched.
 - Provide a **“Back to Dashboard”** action.
 
 **Acceptance criteria**
@@ -94,6 +95,7 @@ Source: `scope.md > The Unique Kernel`, `scope.md > The Core Loop`, `scope.md > 
 - Stage counts update when a task in that stage changes status. Estimates display in minutes for short tasks and hours for longer tasks, are labeled approximate rather than guaranteed, and compare correctly with the hours budget using one consistent unit.
 - Renaming a task changes its displayed title. Adding a custom task with a title and selected/default stage appends it to that stage, leaves existing order intact, starts it incomplete, updates counts/progress immediately, and preserves it in that project after refresh. Description and estimate may be omitted; completion criteria are not required.
 - After refreshing or reopening the app, an own project and its saved task/progress changes remain available, without appearing in another project.
+- Deleting an own project requires confirmation, removes it from the saved list and dashboard, and does not change any other saved project. Canceling confirmation leaves it unchanged.
 - The dashboard's project and recent-project summaries show the current saved progress.
 
 Source: `scope.md > The Core Loop`, `scope.md > What "Working" Looks Like`, `scope.md > The POC Boundary`.
@@ -104,12 +106,15 @@ Source: `scope.md > The Core Loop`, `scope.md > What "Working" Looks Like`, `sco
 - Show the sample overview, MVP goal, stages, task estimates, completion criteria, expand/collapse details, completion checkboxes, and progress bar.
 - **“Reset Demo”** restores the sample to its original task and progress state. It must never overwrite or delete a user's real projects.
 - **“Create My Own Project”** takes the user to the project creation form. **“Back to Dashboard”** returns to the dashboard.
+- Include a small, session-only working planner preview. A user can open a visual screen sketch, add an assignment with a title and due date, and mark an assignment complete. The related sample-plan actions help the user try those two core features. Reset Demo clears those preview changes as well as task progress.
 - The sample requires no account and remains usable without an internet connection after the app has loaded. It follows the selected theme.
 
 **Acceptance criteria**
 
 - Completing or reopening a sample task updates the sample progress indicator.
+- “View screen sketch” opens the planner wireframe; “Try adding an assignment” moves focus to the working preview form. Adding an assignment marks its matching sample-plan task complete; marking an assignment complete demonstrates the completion task and updates the assignment count.
 - Reset Demo restores the original sample plan and progress while leaving all own projects unchanged.
+- Reopening or resetting the demo restores the original preview assignments and unchecked assignment states.
 - Sample activity never appears in the user's saved project list or changes real-project progress.
 - From the sample, the user can return to the dashboard or start creating their own project.
 
@@ -160,14 +165,14 @@ A polished responsive dashboard and plan view; required project idea/name/time i
 ## Deferred From the POC
 
 - Editing the project description or available time after creation — first-demo editing is limited to the project name.
-- Editing task descriptions, completion criteria, or estimated time; changing priority labels; reordering stages/tasks; deleting tasks or projects; restoring a generated plan — the first demo focuses on rename, add, and completion.
+- Editing task descriptions, completion criteria, or estimated time; changing priority labels; reordering stages/tasks; deleting individual tasks; restoring a generated plan — the first demo focuses on rename, add, completion, and confirmed project deletion.
 - Collaboration, team accounts, external integrations, payment processing, and complex backend or project-management features — outside the solo beginner proof of concept.
 - Production-scale plans for complex social networks or Uber-like applications — show a smaller MVP instead.
 - Broader project categories beyond beginner-friendly web apps.
 
 ## Possible Later Enhancements
 
-If the core flow works well, consider expanded project/task editing, delete and restore controls, task reordering, additional kinds of projects, and collaboration only after a clear need emerges.
+If the core flow works well, consider expanded project/task editing, task restore controls, task reordering, additional kinds of projects, and collaboration only after a clear need emerges.
 
 ## Non-Goals
 

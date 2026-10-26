@@ -48,12 +48,12 @@
       <div class="flow" role="img" aria-label="Idea form flows to planner rules, then to the project screen, then to browser storage for real projects">
         <div class="node"><span class="tag">1 · Input</span><strong>Dashboard form</strong><small><code>app.js</code> checks the name, idea, and hours.</small></div>
         <div class="node"><span class="tag">2 · Decide</span><strong>Plan rules</strong><small><code>planner.js</code> picks a template and fits tasks to time.</small></div>
-        <div class="node"><span class="tag">3 · Show</span><strong>Project plan</strong><small><code>app.js</code> draws stages, criteria, and progress.</small></div>
-        <div class="node"><span class="tag">4 · Keep</span><strong>Browser storage</strong><small><code>storage.js</code> remembers real projects on this browser.</small></div>
+        <div class="node"><span class="tag">3 · Show</span><strong>Project plan</strong><small><code>app.js</code> draws stages, criteria, progress, and edit actions.</small></div>
+        <div class="node"><span class="tag">4 · Keep</span><strong>Browser storage</strong><small><code>storage.js</code> remembers, updates, and deletes real projects on this browser.</small></div>
       </div>
       <div class="branch">
         <div><span class="tag">Real project</span><p>Checking, renaming, or adding a task changes the project's data and saves that project by its unique ID.</p></div>
-        <div><span class="tag">Sample demo</span><p>StudyBuddy starts from <code>sample.js</code>'s original data. Demo clicks stay in memory and skip the real-project save step.</p></div>
+        <div><span class="tag">Sample demo</span><p>StudyBuddy starts from <code>sample.js</code>'s original data and includes a working planner preview. Demo clicks stay in memory and skip the real-project save step.</p></div>
       </div>
     </section>
 
@@ -62,7 +62,7 @@
       <div class="modules">
         <details class="module"><summary>Screen and actions · <code>js/app.js</code></summary><div class="module-body">
           <p><code>renderDashboard()</code> draws the form, sample preview, recent project, and saved project cards. Form submission calls <code>buildPlan()</code>, saves the result, and opens it.</p>
-          <p><code>renderPlan()</code> draws the plan and connects the checkbox, edit-title, edit-name, and add-task controls. <code>isSample</code> decides whether changes may be saved.</p>
+          <p><code>renderPlan()</code> draws the plan and connects the checkbox, edit-title, edit-name, add-task, and confirmed delete controls. <code>refreshProgressDisplay()</code> updates progress and stage counts after a checkbox change. The StudyBuddy preview has a wireframe and working assignment form; <code>isSample</code> keeps all of its changes temporary.</p>
           <p>Useful route: <a href="../js/app.js">open app.js</a></p>
         </div></details>
         <details class="module"><summary>Planning rules and math · <code>js/planner.js</code></summary><div class="module-body">
@@ -71,12 +71,12 @@
           <p>Useful route: <a href="../js/planner.js">open planner rules</a></p>
         </div></details>
         <details class="module"><summary>Saved projects · <code>js/storage.js</code></summary><div class="module-body">
-          <p><code>loadProjects()</code> reads the saved list. <code>saveProject()</code> finds one project by ID and replaces only that entry; the recent-project pointer uses a separate storage key.</p>
+          <p><code>loadProjects()</code> reads the saved list. <code>saveProject()</code> finds one project by ID and replaces only that entry. <code>deleteProject()</code> removes only the confirmed project; the recent-project pointer uses a separate storage key.</p>
           <p>This is local to the current browser and website address, so it does not sync to another device.</p>
           <p>Useful route: <a href="../js/storage.js">open storage helpers</a></p>
         </div></details>
         <details class="module"><summary>Sample and theme · <code>js/sample.js</code>, <code>js/theme.js</code>, <code>styles.css</code></summary><div class="module-body">
-          <p><code>createSampleProject()</code> returns a fresh copy each time. The theme helper reads the device setting first, then remembers a manual choice. CSS variables recolor the whole interface.</p>
+          <p><code>createSampleProject()</code> returns fresh plan and assignment data each time. <code>addSampleAssignment()</code>, <code>setSampleAssignmentCompletion()</code>, and <code>setSampleTaskCompletion()</code> connect preview actions to sample-plan progress without writing to saved projects. The theme helper reads the device setting first, then remembers a manual choice. CSS variables recolor the whole interface.</p>
           <p>Useful routes: <a href="../js/sample.js">sample data</a>, <a href="../js/theme.js">theme behavior</a>, <a href="../styles.css">color and layout rules</a></p>
         </div></details>
         <details class="module"><summary>Checks · <code>tests/</code></summary><div class="module-body">
@@ -91,7 +91,7 @@
       <ol class="route">
         <li><div><strong>Start at <code>index.html</code>.</strong> The page has one empty <code>#app</code> space. JavaScript fills that space; the theme button stays in the page header.</div></li>
         <li><div><strong>Follow the form in <code>app.js</code>.</strong> It validates the entries, then asks <code>planner.js</code> for a plan.</div></li>
-        <li><div><strong>Follow one checkbox.</strong> The task's <code>completed</code> value changes. Progress is calculated from all task values, then the view is redrawn.</div></li>
+        <li><div><strong>Follow one checkbox.</strong> The task's <code>completed</code> value changes. Progress is calculated from all task values, and the stage and progress labels update immediately.</div></li>
         <li><div><strong>Check which kind of plan is open.</strong> A real project calls <code>rememberProject()</code>; the StudyBuddy demo skips it, so Reset Demo can make a clean copy.</div></li>
         <li><div><strong>Follow the theme button.</strong> <code>theme.js</code> changes one page attribute; <code>styles.css</code> swaps semantic color variables to update every surface.</div></li>
       </ol>

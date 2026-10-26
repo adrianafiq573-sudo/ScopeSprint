@@ -29,6 +29,27 @@ export function saveProject(project, storage) {
   }
 }
 
+export function deleteProject(projectId, storage) {
+  try {
+    const target = storage ?? globalThis.localStorage;
+    const { projects, error } = loadProjects(target);
+    if (error) return { ok: false, deleted: false, error: "This project could not be deleted because the saved-project list could not be read." };
+    const remaining = projects.filter((project) => project.id !== projectId);
+    if (remaining.length === projects.length) return { ok: true, deleted: false, error: null };
+    const wasRecent = target.getItem(RECENT_PROJECT_KEY) === projectId;
+    target.setItem(PROJECTS_KEY, JSON.stringify(remaining));
+    if (wasRecent) {
+      try {
+        if (typeof target.removeItem === "function") target.removeItem(RECENT_PROJECT_KEY);
+        else target.setItem(RECENT_PROJECT_KEY, "");
+      } catch { /* A stale recent ID is ignored when the dashboard rebuilds its project list. */ }
+    }
+    return { ok: true, deleted: true, error: null };
+  } catch {
+    return { ok: false, deleted: false, error: "Browser storage is unavailable. The project may still be saved." };
+  }
+}
+
 export function getRecentProjectId(storage) {
   try { return (storage ?? globalThis.localStorage).getItem(RECENT_PROJECT_KEY); }
   catch { return null; }

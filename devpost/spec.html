@@ -50,8 +50,8 @@
       <details open><summary>1. Enter and validate an idea <span class="pill">Dashboard</span></summary><div class="detail"><p>The form checks trimmed project name and idea text plus a positive number of hours. Errors stay beside the field, entered information is preserved, and invalid input cannot create a project.</p><p><strong>PRD:</strong> Dashboard and Project Creation · States and Boundaries</p></div></details>
       <details><summary>2. Turn the idea into an MVP <span class="pill">Planner</span></summary><div class="detail"><p>Keyword rules choose a curated template or the general fallback. The plan uses ordered Plan, Build, and Test &amp; Polish stages. For oversized ideas, the original description is displayed exactly as typed, then core MVP tasks and postponed ideas are explained.</p><p><strong>PRD:</strong> Dashboard and Project Creation · Project Task Plan</p></div></details>
       <details><summary>3. Edit tasks and watch progress <span class="pill">Project plan</span></summary><div class="detail"><p>Checking a task recalculates progress right away. A custom task needs a title and stage (Plan by default); description and positive time estimate are optional. It appears at the end of the selected stage, starts incomplete, and does not need completion criteria.</p><p><strong>PRD:</strong> Project Task Plan</p></div></details>
-      <details><summary>4. Return to saved work <span class="pill">Browser storage</span></summary><div class="detail"><p>Real projects, progress, and the chosen theme are saved in the same browser for the same local website address. This is local-only storage: it does not sync to another device. If the browser blocks saving, the app should say so clearly.</p><p><strong>PRD:</strong> Dashboard and Project Creation · Theme and Responsive Use</p></div></details>
-      <details><summary>5. Explore the sample safely <span class="pill">StudyBuddy</span></summary><div class="detail"><p>The demo has its own temporary state. Reset or reopening it restores the original example. The sample is never stored in My Projects and cannot overwrite real work.</p><p><strong>PRD:</strong> Interactive StudyBuddy Sample</p></div></details>
+      <details><summary>4. Return to saved work <span class="pill">Browser storage</span></summary><div class="detail"><p>Real projects, progress, and the chosen theme are saved in the same browser for the same local website address. A user can permanently delete one project after confirming; other projects are kept. This is local-only storage: it does not sync to another device. If the browser blocks saving, the app should say so clearly.</p><p><strong>PRD:</strong> Dashboard and Project Creation · Project Task Plan · Theme and Responsive Use</p></div></details>
+      <details><summary>5. Explore the sample safely <span class="pill">StudyBuddy</span></summary><div class="detail"><p>The demo has its own temporary state, including a working assignment form and screen wireframe. Reset or reopening it restores the original example. The sample is never stored in My Projects and cannot overwrite real work.</p><p><strong>PRD:</strong> Interactive StudyBuddy Sample</p></div></details>
     </section>
 
     <section class="card">
@@ -62,10 +62,10 @@
 ├── js/
 │   ├── app.js                  # Screens and user interactions
 │   ├── planner.js              # Templates and time-fit rules
-│   ├── storage.js              # Save/load real projects and theme
-│   ├── sample.js               # Resettable StudyBuddy example
+│   ├── storage.js              # Save/load/delete real projects and theme
+│   ├── sample.js               # Resettable StudyBuddy plan and preview data
 │   └── theme.js                # Device theme and toggle
-├── tests/planner.test.mjs      # Built-in tests for plan calculations
+├── tests/                      # Built-in planner, storage, sample, and theme tests
 ├── devpost/                    # Canonical Markdown plans + visuals
 └── README.md                   # Setup, run, and test instructions</pre>
       <p class="muted">The app is split into small files so planning rules, saving, sample data, and screen code are easier to inspect while learning.</p>
@@ -76,10 +76,10 @@
       <p>There are no package downloads, paid services, accounts, or API keys. Python's small built-in server serves the files locally; Node runs the logic tests.</p>
       <div class="grid">
         <div class="tile"><h3>Start the app</h3><p>From the project folder, run <code>python -m http.server 8000 --bind 127.0.0.1</code>, then open <code>http://127.0.0.1:8000/</code>.</p><p class="muted">Keep the terminal open and use the same address each visit for saved data.</p></div>
-        <div class="tile"><h3>Run planner tests</h3><p>In another terminal, run <code>node --test tests/planner.test.mjs</code>.</p><p class="muted">Then manually create, edit, refresh, and revisit a project; try invalid inputs, both themes, sample reset, and a narrow mobile window.</p></div>
+        <div class="tile"><h3>Run checks</h3><p>In another terminal, run <code>node --test tests/planner.test.mjs tests/storage.test.mjs tests/sample.test.mjs tests/theme.test.mjs</code>.</p><p class="muted">Then manually create, edit, delete with confirmation, refresh, and revisit a project; try invalid inputs, both themes, sample reset, assignment actions, and a narrow mobile window.</p></div>
       </div>
       <div class="bar" aria-label="Verification is planned"><span></span></div>
-      <p class="muted">The test steps are part of the build plan. No application has been implemented yet.</p>
+      <p class="muted">The three planned app slices are implemented; the automated checks cover planner, storage, sample reset, and theme choice. Manual browser checks are part of the build review.</p>
     </section>
 
     <section class="card">

@@ -1,6 +1,6 @@
 import { buildPlan, calculateProgress, flattenTasks, formatEstimate, validateProjectInput, STAGES } from "./planner.js";
-import { getRecentProjectId, loadProjects, saveProject, setRecentProjectId } from "./storage.js";
-import { createSampleProject } from "./sample.js";
+import { deleteProject as removeSavedProject, getRecentProjectId, loadProjects, saveProject, setRecentProjectId } from "./storage.js";
+import { addSampleAssignment, createSampleProject, setSampleAssignmentCompletion, setSampleTaskCompletion } from "./sample.js";
 import { setupThemeToggle } from "./theme.js";
 
 const app = document.querySelector("#app");
@@ -43,6 +43,50 @@ function rememberProject(project) {
 
 function storageNoticeMarkup() {
   return storageNotice ? `<p class="storage-notice" role="status">${escapeHtml(storageNotice)}</p>` : "";
+}
+
+function refreshProgressDisplay() {
+  for (const checkbox of app.querySelectorAll(".task-check")) {
+    const stage = currentProject.stages.find((item) => item.id === checkbox.dataset.stage);
+    const task = stage?.tasks.find((item) => item.id === checkbox.dataset.task);
+    if (!task) continue;
+    checkbox.checked = task.completed;
+    checkbox.closest(".task-card")?.classList.toggle("is-complete", task.completed);
+  }
+  const progress = calculateProgress(flattenTasks(currentProject.stages));
+  const bar = app.querySelector(".plan-progress [role='progressbar']");
+  if (bar) {
+    bar.setAttribute("aria-valuenow", String(progress.percent));
+    bar.querySelector(".progress-fill").style.width = `${progress.percent}%`;
+  }
+  const percent = app.querySelector(".plan-progress .progress-heading span:last-child");
+  if (percent) percent.textContent = `${progress.percent}%`;
+  const note = app.querySelector(".plan-progress-note");
+  if (note) note.textContent = `${progress.completed} of ${progress.total} tasks completed · time estimates are approximate`;
+  for (const stage of currentProject.stages) {
+    const stageProgress = calculateProgress(stage.tasks);
+    const section = [...app.querySelectorAll(".stage")].find((item) => item.dataset.stageSection === stage.id);
+    const count = section?.querySelector(".stage-count");
+    if (count) count.textContent = `${stageProgress.completed} of ${stageProgress.total} complete`;
+  }
+}
+
+function formatDueDate(value) {
+  if (!value) return "No due date";
+  const date = new Date(`${value}T12:00:00`);
+  return Number.isNaN(date.getTime()) ? value : new Intl.DateTimeFormat(undefined, { month: "short", day: "numeric" }).format(date);
+}
+
+function renderStudyBuddyAssignments() {
+  const list = app.querySelector("#studybuddy-assignment-list");
+  if (!list) return;
+  const assignments = currentProject.assignments ?? [];
+  list.innerHTML = assignments.map((assignment) => `<li class="demo-assignment ${assignment.completed ? "is-complete" : ""}">
+    <input type="checkbox" data-sample-assignment="${escapeHtml(assignment.id)}" ${assignment.completed ? "checked" : ""} aria-label="Mark ${escapeHtml(assignment.title)} complete">
+    <div><strong>${escapeHtml(assignment.title)}</strong><span>${escapeHtml(assignment.subject || "Personal study")}</span></div><time datetime="${escapeHtml(assignment.dueDate)}">${escapeHtml(formatDueDate(assignment.dueDate))}</time>
+  </li>`).join("");
+  const count = app.querySelector("#studybuddy-count");
+  if (count) count.textContent = `${assignments.length} assignments · ${assignments.filter((assignment) => assignment.completed).length} done`;
 }
 
 function renderProjectCard(project) {
@@ -164,15 +208,22 @@ function renderPlan(expandedStages, editingTaskId = null) {
       <div class="task-main">${task.priority ? `<div class="sample-task-topline"><span class="priority-pill" data-priority="${escapeHtml(task.priority)}">${escapeHtml(task.priority)} priority</span></div>` : ""}
         ${isSample ? `<h3 class="task-title">${escapeHtml(task.title)}</h3>` : editingTaskId === task.id ? `<form class="task-edit-form" data-edit-task="${escapeHtml(task.id)}"><label class="sr-only" for="edit-${escapeHtml(task.id)}">Task title</label><input id="edit-${escapeHtml(task.id)}" name="title" value="${escapeHtml(task.title)}" required><button class="small-button" type="submit">Save</button><button class="text-button small-text-button" type="button" data-cancel-edit>Cancel</button><p class="field-error" data-title-error role="alert" hidden></p></form>` : `<div class="task-heading"><h3 class="task-title">${escapeHtml(task.title)}</h3><button class="task-action" type="button" data-edit-title="${escapeHtml(task.id)}">Edit title</button></div>`}
         ${task.description ? `<p class="task-description">${escapeHtml(task.description)}</p>` : ""}
-        ${task.completionCriteria ? `<details class="task-details"><summary>See completion goal</summary><p class="task-criteria">${escapeHtml(task.completionCriteria)}</p></details>` : ""}</div>
+        ${task.completionCriteria ? `<details class="task-details"><summary>See completion goal</summary><p class="task-criteria">${escapeHtml(task.completionCriteria)}</p></details>` : ""}
+        ${isSample && task.demoAction ? `<button class="small-button demo-task-action" type="button" data-demo-action="${escapeHtml(task.demoAction)}">${escapeHtml(task.demoActionLabel)}</button>` : ""}</div>
       <span class="task-time">${task.estimatedMinutes ? escapeHtml(formatEstimate(task.estimatedMinutes)) : "No estimate"}</span></article>`).join("");
     return `<details class="panel stage" data-stage-section="${escapeHtml(stage.id)}" ${openStageIds.has(stage.id) ? "open" : ""}><summary><span class="stage-title">${escapeHtml(stage.name)}<span class="stage-count">${stageProgress.completed} of ${stageProgress.total} complete</span></span></summary><div class="stage-tasks">${cards || `<p class="empty-stage">No tasks yet. Add one below.</p>`}</div></details>`;
   }).join("");
 
   app.innerHTML = `${storageNoticeMarkup()}<div class="plan-header"><button class="text-button" id="back-to-dashboard" type="button">← Back to Dashboard</button><div>${isSample ? `<span class="sample-badge">SAMPLE / DEMO</span>` : `<p class="eyebrow">Your first version, step by step</p>`}<h1>${escapeHtml(currentProject.name)}</h1></div></div>
-    <section class="panel plan-summary" aria-label="Project overview and progress"><div>${isSample ? `<h2>Project overview</h2>` : `<div class="project-name-edit"><h2>Project name</h2><button class="task-action" id="edit-project-name" type="button">Edit name</button></div>`}<p class="idea-verbatim">${escapeHtml(currentProject.ideaText)}</p>${isSample ? `<p class="sample-goal"><strong>MVP goal:</strong> ${escapeHtml(currentProject.sampleGoal)}</p>` : `<form id="project-name-form" class="inline-name-form" hidden><label for="new-project-name">Project name</label><input id="new-project-name" name="name" value="${escapeHtml(currentProject.name)}" required><button class="small-button" type="submit">Save name</button><button class="text-button small-text-button" type="button" data-cancel-name>Cancel</button><p class="field-error" id="project-name-error" role="alert" hidden></p></form>`}</div>
+    <section class="panel plan-summary" aria-label="Project overview and progress"><div>${isSample ? `<h2>Project overview</h2>` : `<div class="project-name-edit"><h2>Project name</h2><button class="task-action" id="edit-project-name" type="button">Edit name</button><button class="task-action delete-project-action" id="delete-project" type="button">Delete project</button></div>`}<p class="idea-verbatim">${escapeHtml(currentProject.ideaText)}</p>${isSample ? `<p class="sample-goal"><strong>MVP goal:</strong> ${escapeHtml(currentProject.sampleGoal)}</p>` : `<form id="project-name-form" class="inline-name-form" hidden><label for="new-project-name">Project name</label><input id="new-project-name" name="name" value="${escapeHtml(currentProject.name)}" required><button class="small-button" type="submit">Save name</button><button class="text-button small-text-button" type="button" data-cancel-name>Cancel</button><p class="field-error" id="project-name-error" role="alert" hidden></p></form>`}</div>
       <div class="plan-progress"><div class="progress-heading"><strong>Overall progress</strong><span>${progress.percent}%</span></div><div class="progress-track" role="progressbar" aria-label="Overall task progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${progress.percent}"><div class="progress-fill" style="width:${progress.percent}%"></div></div><div class="plan-progress-note">${progress.completed} of ${progress.total} tasks completed · time estimates are approximate</div></div></section>
-    ${isSample ? `<section class="panel sample-overview"><h2>How this first version helps</h2><p>This small plan focuses on adding and finishing assignments first. More advanced planner features can wait until the core list is useful.</p></section><div class="sample-actions"><button class="button" id="reset-demo" type="button">Reset Demo</button><button class="button" id="create-own-project" type="button">Create My Own Project <span aria-hidden="true">→</span></button></div>` : renderScopeSection(currentProject)}<p class="plan-note">Work through the stages in order. Check a task when its completion goal is met.</p>
+    ${isSample ? `<section class="panel sample-overview"><h2>How this first version helps</h2><p>This small plan focuses on adding and finishing assignments first. More advanced planner features can wait until the core list is useful.</p></section><div class="sample-actions"><button class="button" id="reset-demo" type="button">Reset Demo</button><button class="button" id="create-own-project" type="button">Create My Own Project <span aria-hidden="true">→</span></button></div>
+      <section class="panel studybuddy-panel" aria-labelledby="studybuddy-preview-heading"><div class="studybuddy-panel-head"><div><p class="eyebrow">Try the idea</p><h2 id="studybuddy-preview-heading">StudyBuddy · your week at a glance</h2><p>Add an assignment or mark one finished. This mini preview resets with the demo.</p></div><span class="sample-badge">WORKING PREVIEW</span></div>
+        <div class="week-strip" aria-label="A sample week"><span><small>MON</small>Focus</span><span><small>TUE</small>Plan</span><span class="today"><small>WED</small>Study</span><span><small>THU</small>Review</span><span><small>FRI</small>Rest</span></div>
+        <div class="studybuddy-list-head"><h3>Upcoming assignments</h3><span id="studybuddy-count"></span></div><ul class="demo-assignment-list" id="studybuddy-assignment-list"></ul>
+        <form id="demo-assignment-form" class="demo-assignment-form" novalidate><div class="field"><label for="demo-assignment-title">Assignment</label><input id="demo-assignment-title" name="title" placeholder="e.g. Review lecture notes" aria-describedby="demo-assignment-error"></div><div class="field"><label for="demo-assignment-subject">Subject <span class="optional-label">(optional)</span></label><input id="demo-assignment-subject" name="subject" placeholder="e.g. Biology"></div><div class="field"><label for="demo-assignment-date">Due date</label><input id="demo-assignment-date" name="dueDate" type="date" aria-describedby="demo-assignment-error"></div><button class="button" type="submit">Add assignment</button><p class="field-error" id="demo-assignment-error" role="alert" hidden></p></form>
+      </section>
+      <details class="panel sketch-card" id="studybuddy-sketch"><summary><span>Screen sketch</span><span>Open the simple layout used for the plan</span></summary><div class="wireframe" aria-label="StudyBuddy screen wireframe"><div class="wireframe-top"><span>StudyBuddy</span><span>☼</span></div><div class="wireframe-greeting">A calmer week starts here.<small>Your assignments, one step at a time.</small></div><div class="wireframe-heading">Upcoming assignments</div><div class="wireframe-row"><span class="wireframe-check"></span><span>Biology lab notes</span><i></i></div><div class="wireframe-row"><span class="wireframe-check"></span><span>Read chapter 6</span><i></i></div><div class="wireframe-form">＋ Add an assignment</div></div></details>` : renderScopeSection(currentProject)}<p class="plan-note">Work through the stages in order. Check a task when its completion goal is met.</p>
     <section aria-label="Project stages">${stages}</section>
     ${isSample ? "" : `<section class="panel add-task-panel" aria-labelledby="add-task-heading"><h2 id="add-task-heading">Add a task</h2><p class="panel-intro">New tasks start incomplete and appear at the end of their stage.</p><form id="add-task-form" novalidate>
       <div class="field"><label for="new-task-title">Task title</label><input id="new-task-title" name="title" placeholder="e.g. Add a clear empty state" required aria-describedby="new-task-title-error"><p class="field-error" id="new-task-title-error" role="alert" hidden></p></div>
@@ -186,13 +237,24 @@ function renderPlan(expandedStages, editingTaskId = null) {
   const saveAndRender = () => { rememberProject(currentProject); renderPlan(currentOpenIds()); };
   const back = () => { currentProject = null; isSample = false; renderDashboard(); app.focus(); };
   app.querySelectorAll("#back-to-dashboard, #plan-back-to-dashboard").forEach((button) => button.addEventListener("click", back));
+  app.querySelector("#delete-project")?.addEventListener("click", () => {
+    if (!window.confirm(`Delete “${currentProject.name}”? This removes the project and its tasks from this browser. This cannot be undone.`)) return;
+    const result = removeSavedProject(currentProject.id);
+    if (!result.ok) { storageNotice = result.error; renderPlan(currentOpenIds()); return; }
+    projects = projects.filter((project) => project.id !== currentProject.id);
+    currentProject = null;
+    isSample = false;
+    renderDashboard();
+    app.focus();
+  });
   app.querySelectorAll(".task-check").forEach((checkbox) => checkbox.addEventListener("change", () => {
     const stage = currentProject.stages.find((item) => item.id === checkbox.dataset.stage);
     const task = stage?.tasks.find((item) => item.id === checkbox.dataset.task);
     if (!task) return;
     task.completed = checkbox.checked;
     if (!isSample) rememberProject(currentProject);
-    renderPlan(currentOpenIds());
+    checkbox.closest(".task-card")?.classList.toggle("is-complete", task.completed);
+    refreshProgressDisplay();
   }));
   app.querySelectorAll("[data-edit-title]").forEach((button) => button.addEventListener("click", () => renderPlan(currentOpenIds(), button.dataset.editTitle)));
   app.querySelectorAll("[data-cancel-edit]").forEach((button) => button.addEventListener("click", () => renderPlan(currentOpenIds())));
@@ -245,6 +307,50 @@ function renderPlan(expandedStages, editingTaskId = null) {
     rememberProject(currentProject);
     renderPlan(new Set([...currentOpenIds(), stage.id]));
   });
+  app.querySelectorAll("[data-demo-action]").forEach((button) => button.addEventListener("click", () => {
+    if (button.dataset.demoAction === "sketch") {
+      const sketch = app.querySelector("#studybuddy-sketch");
+      sketch.open = true;
+      setSampleTaskCompletion(currentProject, "sample-plan-2", true);
+      refreshProgressDisplay();
+      sketch.scrollIntoView({ behavior: "smooth", block: "center" });
+    } else {
+      const field = app.querySelector("#demo-assignment-title");
+      field.scrollIntoView({ behavior: "smooth", block: "center" });
+      field.focus();
+    }
+  }));
+  if (isSample) {
+    renderStudyBuddyAssignments();
+    app.querySelector("#demo-assignment-form").addEventListener("submit", (event) => {
+      event.preventDefault();
+      const form = event.currentTarget;
+      const title = form.elements.title.value.trim();
+      const dueDate = form.elements.dueDate.value;
+      const error = app.querySelector("#demo-assignment-error");
+      if (!title || !dueDate) {
+        error.textContent = !title && !dueDate ? "Add an assignment title and due date." : !title ? "Enter an assignment title." : "Choose a due date.";
+        error.hidden = false;
+        (!title ? form.elements.title : form.elements.dueDate).focus();
+        return;
+      }
+      error.textContent = "";
+      error.hidden = true;
+      addSampleAssignment(currentProject, { id: `assignment-${Date.now()}`, title, subject: form.elements.subject.value.trim(), dueDate, completed: false });
+      form.reset();
+      renderStudyBuddyAssignments();
+      refreshProgressDisplay();
+    });
+    app.querySelector("#studybuddy-assignment-list").addEventListener("change", (event) => {
+      const checkbox = event.target.closest("[data-sample-assignment]");
+      if (!checkbox) return;
+      const assignment = currentProject.assignments.find((item) => item.id === checkbox.dataset.sampleAssignment);
+      if (!assignment || !setSampleAssignmentCompletion(currentProject, assignment.id, checkbox.checked)) return;
+      checkbox.closest(".demo-assignment")?.classList.toggle("is-complete", assignment.completed);
+      app.querySelector("#studybuddy-count").textContent = `${currentProject.assignments.length} assignments · ${currentProject.assignments.filter((item) => item.completed).length} done`;
+      refreshProgressDisplay();
+    });
+  }
   app.querySelector("#reset-demo")?.addEventListener("click", () => { currentProject = createSampleProject(); isSample = true; renderPlan(); });
   app.querySelector("#create-own-project")?.addEventListener("click", () => { currentProject = null; isSample = false; renderDashboard(); app.querySelector("#project-name")?.focus(); });
 }

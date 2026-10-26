@@ -86,19 +86,21 @@ Implements `prd.md > Dashboard and Project Creation` and `prd.md > Project Task 
 
 Displays the project's name, original idea, progress, ordered collapsible stages, and task details. The first demo supports editing the project name, renaming a task, checking/unchecking tasks, and adding a custom task. An added task needs a title and a stage (Plan, Build, or Test & Polish; default Plan); description and estimate are optional. Use a positive numeric estimate and a minutes-or-hours selector, converting to minutes internally. A custom task does not need completion criteria. Append it to the selected stage, leave other tasks in their current order, start it incomplete, and show it immediately. Update the selected stage count and total progress at once.
 
-Progress is derived from completed tasks divided by all tasks; with no tasks, show 0% and 0 of 0. Adding an incomplete task increases the denominator and recalculates the project percentage. Re-rendering a task or progress display must not overwrite or reorder unrelated tasks.
+An own project can be permanently deleted from its plan after the browser's confirmation dialog. On confirmation, remove that project's record by ID and clear its recent-project pointer if it was the most recent project. Canceling must leave it untouched. A delete failure must keep the project on screen and explain the storage problem. Never offer this own-project action for StudyBuddy.
+
+Progress is derived from completed tasks divided by all tasks; with no tasks, show 0% and 0 of 0. Adding an incomplete task increases the denominator and recalculates the project percentage. Checkbox changes update the task card, stage count, and overall progress display immediately. Re-rendering a task or progress display must not overwrite or reorder unrelated tasks.
 
 Implements `prd.md > Project Task Plan` and `prd.md > States and Boundaries`.
 
 ### StudyBuddy sample
 
-Displays the bundled StudyBuddy example and uses a fresh in-memory copy each time the sample is opened. Its task checkboxes and progress work for the current visit. “Reset Demo” replaces that temporary copy with the original sample. The sample never invokes project persistence, never appears in My Projects, and never changes any real project. “Create My Own Project” and “Back to Dashboard” follow the PRD actions.
+Displays the bundled StudyBuddy example and uses a fresh in-memory copy each time the sample is opened. Its task checkboxes and progress work for the current visit. A small working StudyBuddy preview includes sample assignments, a title-and-due-date form, assignment completion checkboxes, and a visual planner wireframe. Sample actions open the relevant sketch or focus the assignment form; adding or completing an assignment demonstrates its matching plan task and updates ScopeSprint's sample progress. “Reset Demo” replaces all temporary plan and preview state with the original sample. The sample never invokes project persistence, never appears in My Projects, and never changes any real project. “Create My Own Project” and “Back to Dashboard” follow the PRD actions.
 
 Implements `prd.md > StudyBuddy Sample Plan` and `prd.md > Interactive StudyBuddy Sample`.
 
 ### Browser storage and theme
 
-Storage helpers load, save, and update own projects separately by project ID, as well as the most recently opened project ID and chosen theme. Theme selection falls back to `prefers-color-scheme` only if no saved choice exists. Sample data remains outside storage.
+Storage helpers load, save, update, and delete own projects separately by project ID, as well as the most recently opened project ID and chosen theme. Theme selection falls back to `prefers-color-scheme` only if no saved choice exists. Sample data remains outside storage.
 
 Implements `prd.md > Dashboard and Project Creation`, `prd.md > Project Task Plan`, `prd.md > Theme and Responsive Use`, and `prd.md > States and Boundaries`.
 
@@ -137,7 +139,7 @@ Custom tasks may have empty description or `estimatedMinutes: null`; they do not
 
 Separate storage entries hold the list of own projects, last opened own project ID, and manual theme choice. On dashboard load, read those entries and compute progress from task completion flags. On each own-project edit, update its timestamp and save that project. The `localStorage` API is scoped to an origin and can fail in private/restricted browser contexts; see [MDN's localStorage documentation](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage). The app should catch read/write errors, keep the current session usable where possible, and tell the user changes could not be saved.
 
-StudyBuddy is immutable source data in the app code. Opening it makes an in-memory copy; every new open starts from the source data. It is never put into the own-project list or localStorage.
+StudyBuddy plan content is bundled in the app code. Opening it makes a fresh in-memory copy, including the initial preview assignments; every new open starts from that baseline. Demo assignment and task checkboxes update this temporary copy only. The sample is never put into the own-project list or localStorage.
 
 ## File Structure
 
@@ -180,13 +182,15 @@ There are no external services, APIs, databases, paid plans, secrets, or third-p
 - **Even the core template is longer than the time budget** → show the smallest useful core plan and its approximate minimum time with an honest warning; keep nonessential ideas in “Save for later.”
 - **Browser storage is unavailable or invalid JSON is found** → avoid crashing; show an understandable saving/loading notice, keep the current session usable when possible, and never claim an unsaved edit is safely stored.
 - **A required field or custom-task value is invalid** → show a field-level message, preserve other values, and do not create/save an invalid project or task.
+- **The user cancels project deletion** → keep the project visible and saved. If browser storage fails during deletion, explain that the project could not be deleted and keep it open.
 
 ## What Was Simplified and Why
 
 - **Prewritten templates and transparent keyword rules** instead of an AI service — no API key, cost, network delay, or false AI claim; the tradeoff is that only a few common patterns receive tailored plans and other ideas get the generic fallback.
 - **Browser-local project data** instead of accounts and a hosted database — it proves the create/edit/return loop with minimal setup; projects do not sync across devices and can be lost if browser data is cleared.
 - **Session-only interactive sample** instead of saving demo edits — every visit begins with the same clean example and demo state cannot mix with user work.
-- **Limited first-demo editing** instead of full project management — name edit, task rename/add, and checkbox completion prove the useful core while keeping the solo build achievable.
+- **Limited first-demo editing** instead of full project management — name edit, task rename/add, checkbox completion, and confirmed project deletion prove the useful core while keeping the solo build achievable.
+- **Small working sample preview** instead of a fully featured student planner — a form, completion checkboxes, and wireframe illustrate the plan's first two actions without adding backend work or mixing demo state with real projects.
 - **Local-only run instructions** instead of adding deployment setup — enough for learning and recording a demo; hosting remains an optional later choice.
 
 ## Decisions and Open Issues
@@ -194,6 +198,7 @@ There are no external services, APIs, databases, paid plans, secrets, or third-p
 - **Learner choice:** Use simple HTML/CSS/JavaScript and avoid a backend or paid API unless essential. The accepted tradeoff is that data stays in one browser/device.
 - **Learner choice:** Use rules and templates for the first demo; use a general fallback for unmatched ideas. No real AI model is claimed.
 - **Learner choice:** Keep StudyBuddy session-only and reset it to its original state whenever reopened; keep real projects in `localStorage`.
+- **Learner follow-up:** Allow a user to delete one own project only after confirmation. Keep the StudyBuddy demo richer with a working assignment preview and a visible screen sketch; demo interactions remain temporary.
 - **Learner choice:** Show the original description exactly as entered; an AI-written summary is not required.
 - **Learner choice:** Custom tasks require a title and selected/default stage; description and estimate are optional, completion criteria are not required, new tasks append at the end of that stage, start incomplete, and save to the current project.
 - **Implementation detail derived from the accepted time requirements:** Store project budget and task estimates in minutes, while displaying project entry in hours and short/long task estimates in the requested units.

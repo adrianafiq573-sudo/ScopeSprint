@@ -30,4 +30,5 @@ There are no package installs, external APIs, or environment keys for this demo.
 - The implementation is being built in small verified slices; some planned behaviors may arrive in later slices.
 - Real projects and their edits are saved in this browser's local storage. They do not sync across browsers or devices. The demo uses temporary data and stays separate from saved projects.
 - The first editable-plan slice supports changing the project name, renaming and adding tasks, and updating task completion. More complete project-management controls are intentionally out of scope.
-- The StudyBuddy demo starts fresh whenever it opens; reset and task checkboxes in the demo never write to the saved-project list. The theme follows your device until you switch it, then your choice is remembered in this browser.
+- Delete an own project from its plan after confirming; only that project's saved record is removed.
+- The StudyBuddy demo starts fresh whenever it opens and includes a working assignment preview and screen sketch; demo changes never write to the saved-project list. The theme follows your device until you switch it, then your choice is remembered in this browser.

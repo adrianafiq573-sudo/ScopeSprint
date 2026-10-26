@@ -46,7 +46,7 @@ Build mode: learn
 
 ## Final Review
 
-- [ ] Final review complete — feedback resolved and learner confirms ready to ship
+- [x] Final review complete — feedback resolved and learner confirms ready to ship
 
 ## Code Tour and App Map
 
@@ -54,10 +54,13 @@ Build mode: learn
 - [x] Optional edit and transfer reflection addressed — offered/declined/already covered/not applicable as appropriate
 - [x] `devpost/app-map.html` generated from finished code, checked, and shown, including a project-grounded practice to reuse
 
-Activity and evidence: Generated and opened `devpost/app-map.html`; it explains actual code paths and includes a sample-task practice. The learner confirmed all three slices work in their WSL browser. The browser attached to the agent could not reach the local server, so the code tour uses the static map. Sixteen planner, storage, sample, and theme tests pass.
-Route and stops: `index.html` (`#app`, `#theme-toggle`) → `js/app.js` (`setupThemeToggle`, `renderDashboard`, `renderPlan`, `rememberProject`) → `js/planner.js` (`validateProjectInput`, `chooseTemplate`, `buildPlan`, `calculateProgress`) → `js/storage.js` (`loadProjects`, `saveProject`). Sample path: `js/sample.js` (`createSampleProject`) and the `isSample` guard in `js/app.js`. Theme path: `js/theme.js` (`resolveInitialTheme`, `setupThemeToggle`) → semantic variables in `styles.css`.
+Activity and evidence: Generated and opened `devpost/app-map.html`; it explains actual code paths and includes a sample-task practice. The learner confirmed the initial three slices and the project-deletion/StudyBuddy follow-up work in their WSL browser. The browser attached to the agent could not reach the local server, so the code tour uses the static map. Nineteen planner, storage, sample, theme, and deletion/helper tests pass.
+Route and stops: `index.html` (`#app`, `#theme-toggle`) → `js/app.js` (`setupThemeToggle`, `renderDashboard`, `renderPlan`, `rememberProject`) → `js/planner.js` (`validateProjectInput`, `chooseTemplate`, `buildPlan`, `calculateProgress`) → `js/storage.js` (`loadProjects`, `saveProject`, `deleteProject`). Sample path: `js/sample.js` (`createSampleProject`, `addSampleAssignment`, `setSampleAssignmentCompletion`, `setSampleTaskCompletion`) and the `isSample` guard in `js/app.js`. Theme path: `js/theme.js` (`resolveInitialTheme`, `setupThemeToggle`) → semantic variables in `styles.css`.
 Edit outcome: Not tried; the optional sample-task edit is offered in `devpost/app-map.html`, with a matching test update and verification command.
 Reflection: Offered in the code map's reusable practice; no personal response has been recorded.
 Activity mode: Static code map and guided route, connected to the live app behavior the learner verified in their browser.
 
 ## Revisions
+
+- Post-demo learner feedback: implemented and verified project deletion with confirmation; refreshed the StudyBuddy sample with a working assignment preview and screen sketch; connected sample actions to matching checklist tasks; made task checkbox progress update directly.
+- Follow-up browser check: learner confirmed deletion and the updated StudyBuddy demo work as expected, including the relevant plan actions.

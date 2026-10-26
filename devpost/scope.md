@@ -25,7 +25,7 @@ The learner is building ScopeSprint for the Devpost Build With AI: Basics hackat
 In a short screen demo, a beginner enters a small web app idea and available time, sees a prioritized plan with clear completion goals, completes a few tasks, and sees the progress update and remain saved after a page refresh. For an oversized idea, the plan should suggest a smaller MVP rather than a production-scale build.
 
 ## The POC Boundary
-Build a simple, responsive browser-based proof of concept focused on small, beginner-friendly web app ideas. Include idea and time input, a prioritized MVP plan with clear completion goals, task editing and completion, progress tracking, browser persistence, and a useful sample project. Keep the experience honest about how plans are produced: do not claim a real AI model unless one is genuinely integrated. Avoid a backend or paid API unless the technical plan shows it is essential.
+Build a simple, responsive browser-based proof of concept focused on small, beginner-friendly web app ideas. Include idea and time input, a prioritized MVP plan with clear completion goals, task editing and completion, progress tracking, browser persistence, confirmed deletion of a user's own project, and a useful interactive sample project. The StudyBuddy sample includes a tiny working assignment planner so its sample tasks can be explored rather than only read. Keep the experience honest about how plans are produced: do not claim a real AI model unless one is genuinely integrated. Avoid a backend or paid API unless the technical plan shows it is essential.
 
 ## Later
 Broader project types beyond small, beginner-friendly web apps are outside the first-version focus and can be reconsidered later.
