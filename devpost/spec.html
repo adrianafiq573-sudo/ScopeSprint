@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f8f4ec">
+  <title>ScopeSprint — Technical Blueprint</title>
+  <style>
+    :root{color-scheme:light;--bg:#f8f4ec;--panel:#fffdf8;--soft:#ede3d4;--ink:#342f29;--muted:#655b50;--line:#d9cbb8;--accent:#9f5d43;--accent-ink:#fffaf5;--sage:#566a4a;--shadow:0 14px 36px #4b38201a}
+    @media(prefers-color-scheme:dark){:root{color-scheme:dark;--bg:#111827;--panel:#1b2638;--soft:#273449;--ink:#e8edf4;--muted:#a6b3c5;--line:#39475b;--accent:#8aaed0;--accent-ink:#111827;--sage:#91b59a;--shadow:0 14px 36px #050a1280}}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 system-ui,-apple-system,"Segoe UI",sans-serif}a{color:var(--accent)}.wrap{width:min(1080px,calc(100% - 32px));margin:auto}.top{padding:44px 0 28px}.eyebrow{color:var(--sage);font-weight:750;letter-spacing:.09em;text-transform:uppercase;font-size:.78rem}h1{font-size:clamp(2rem,5vw,3.5rem);line-height:1.05;letter-spacing:-.04em;margin:.5rem 0 1rem}.intro{max-width:740px;color:var(--muted);font-size:1.1rem}.tag{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:99px;padding:.28rem .75rem;color:var(--muted);font-size:.85rem;background:var(--panel)}main{padding-bottom:64px}.card{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:clamp(18px,3vw,30px);box-shadow:var(--shadow);margin:18px 0}.card h2{margin:0 0 8px;letter-spacing:-.02em}.muted{color:var(--muted)}.diagram{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:24px 0}.node{position:relative;padding:16px;border:1px solid var(--line);background:var(--soft);border-radius:14px;min-height:120px}.node strong{display:block;margin:7px 0}.node:not(:last-child):after{content:"→";position:absolute;right:-13px;top:40%;color:var(--accent);font-size:1.25rem;font-weight:800;z-index:1}.num{color:var(--sage);font-size:.8rem;font-weight:800}.loop{border-left:3px solid var(--accent);padding:12px 16px;margin-top:12px;background:var(--soft);border-radius:0 12px 12px 0}.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}.tile{padding:16px;border:1px solid var(--line);border-radius:14px;background:var(--soft)}.tile h3{margin:0 0 6px}.pill{font-size:.78rem;color:var(--sage);font-weight:750}.bar{height:10px;border-radius:99px;background:var(--soft);overflow:hidden;margin:12px 0}.bar span{display:block;width:62%;height:100%;border-radius:inherit;background:var(--sage)}details{border:1px solid var(--line);border-radius:14px;background:var(--panel);margin:10px 0;overflow:hidden}summary{cursor:pointer;list-style:none;padding:16px 18px;font-weight:750;display:flex;align-items:center;justify-content:space-between;gap:16px}summary::-webkit-details-marker{display:none}summary:after{content:"+";font-size:1.35rem;color:var(--accent)}details[open] summary:after{content:"−"}details[open] summary{border-bottom:1px solid var(--line)}.detail{padding:16px 18px;color:var(--muted)}.detail p:first-child{margin-top:0}.tree{overflow:auto;padding:18px;border-radius:14px;background:var(--soft);color:var(--ink);font: .9rem/1.65 ui-monospace,SFMono-Regular,Consolas,monospace}.notice{border-left:4px solid var(--sage);padding:12px 16px;background:var(--soft);border-radius:0 12px 12px 0}.actions{display:flex;gap:12px;align-items:center;flex-wrap:wrap}.button{border:0;border-radius:12px;padding:12px 17px;background:var(--accent);color:var(--accent-ink);font:inherit;font-weight:750;cursor:pointer}.button:focus-visible,summary:focus-visible,a:focus-visible{outline:3px solid var(--sage);outline-offset:3px}.footer{padding:28px 0;color:var(--muted);border-top:1px solid var(--line)}code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;background:var(--soft);padding:.1rem .3rem;border-radius:5px}
+    @media(max-width:720px){.diagram{grid-template-columns:1fr 1fr}.node:nth-child(2):after{display:none}.grid{grid-template-columns:1fr}}
+    @media(max-width:460px){.diagram{grid-template-columns:1fr}.node:after{display:none!important}.wrap{width:min(100% - 22px,1080px)}}
+  </style>
+</head>
+<body>
+  <header class="top wrap">
+    <div class="eyebrow">Build With AI · Basics · Step 4</div>
+    <h1>ScopeSprint<br>Technical Blueprint</h1>
+    <p class="intro">This is the draft plan for how the approved product requirements become a small working web app. Read the Markdown file as the source of truth; this page adds a visual map and beginner-friendly expandable explanations.</p>
+    <span class="tag">Approved · Ready for build planning</span>
+  </header>
+  <main class="wrap">
+    <section class="card" aria-labelledby="flow-title">
+      <h2 id="flow-title">How a project moves through ScopeSprint</h2>
+      <p class="muted">The browser handles the form, plan rules, screen updates, and saving. No project data needs to go to an outside service.</p>
+      <div class="diagram" role="img" aria-label="Dashboard form flows to planning rules, then to a staged plan, then browser storage for the user's projects">
+        <div class="node"><span class="num">01 · INPUT</span><strong>Dashboard form</strong><span class="muted">Name, idea, and available hours</span></div>
+        <div class="node"><span class="num">02 · PLAN</span><strong>Rules + templates</strong><span class="muted">Choose tasks and fit the budget</span></div>
+        <div class="node"><span class="num">03 · USE</span><strong>Task plan</strong><span class="muted">Edit, add, check, and see progress</span></div>
+        <div class="node"><span class="num">04 · KEEP</span><strong>Browser storage</strong><span class="muted">Own projects return after refresh</span></div>
+      </div>
+      <div class="loop"><strong>StudyBuddy follows a separate path.</strong> Its tasks are copied into temporary page data. You can interact with the demo, but opening it again restores its original state and never changes your real projects.</div>
+    </section>
+
+    <section class="card">
+      <h2>What “rules and templates” means</h2>
+      <p>Instead of sending the idea to an AI model, ScopeSprint checks for a few known beginner web-app patterns and picks matching tasks written ahead of time. If it does not recognize the idea, it uses a general small-web-app plan. That keeps the first demo free and offline, while being honest that it cannot deeply understand every idea.</p>
+      <div class="grid">
+        <div class="tile"><span class="pill">CORE TASKS</span><h3>Keep the useful minimum</h3><p class="muted">Core tasks come first so there is a small, usable version to build.</p></div>
+        <div class="tile"><span class="pill">TIME FIT</span><h3>Use one measuring unit</h3><p class="muted">Hours from the form are converted to minutes for comparison. Short estimates show minutes; longer ones show hours.</p></div>
+        <div class="tile"><span class="pill">OPTIONAL TASKS</span><h3>Save the rest for later</h3><p class="muted">Optional features are added only while they fit. Postponed features include a short reason.</p></div>
+        <div class="tile"><span class="pill">TOO LITTLE TIME</span><h3>Show an honest warning</h3><p class="muted">If even the core plan is longer, ScopeSprint shows the smallest useful plan and its approximate minimum time.</p></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Follow the main journey</h2>
+      <p class="muted">Open each step to see which part of the app is responsible. These connect directly to headings in <code>prd.md</code>.</p>
+      <details open><summary>1. Enter and validate an idea <span class="pill">Dashboard</span></summary><div class="detail"><p>The form checks trimmed project name and idea text plus a positive number of hours. Errors stay beside the field, entered information is preserved, and invalid input cannot create a project.</p><p><strong>PRD:</strong> Dashboard and Project Creation · States and Boundaries</p></div></details>
+      <details><summary>2. Turn the idea into an MVP <span class="pill">Planner</span></summary><div class="detail"><p>Keyword rules choose a curated template or the general fallback. The plan uses ordered Plan, Build, and Test &amp; Polish stages. For oversized ideas, the original description is displayed exactly as typed, then core MVP tasks and postponed ideas are explained.</p><p><strong>PRD:</strong> Dashboard and Project Creation · Project Task Plan</p></div></details>
+      <details><summary>3. Edit tasks and watch progress <span class="pill">Project plan</span></summary><div class="detail"><p>Checking a task recalculates progress right away. A custom task needs a title and stage (Plan by default); description and positive time estimate are optional. It appears at the end of the selected stage, starts incomplete, and does not need completion criteria.</p><p><strong>PRD:</strong> Project Task Plan</p></div></details>
+      <details><summary>4. Return to saved work <span class="pill">Browser storage</span></summary><div class="detail"><p>Real projects, progress, and the chosen theme are saved in the same browser for the same local website address. This is local-only storage: it does not sync to another device. If the browser blocks saving, the app should say so clearly.</p><p><strong>PRD:</strong> Dashboard and Project Creation · Theme and Responsive Use</p></div></details>
+      <details><summary>5. Explore the sample safely <span class="pill">StudyBuddy</span></summary><div class="detail"><p>The demo has its own temporary state. Reset or reopening it restores the original example. The sample is never stored in My Projects and cannot overwrite real work.</p><p><strong>PRD:</strong> Interactive StudyBuddy Sample</p></div></details>
+    </section>
+
+    <section class="card">
+      <h2>Files in the planned app</h2>
+      <pre class="tree">scopesprint/
+├── index.html                 # App page structure
+├── styles.css                 # Layout and both color palettes
+├── js/
+│   ├── app.js                  # Screens and user interactions
+│   ├── planner.js              # Templates and time-fit rules
+│   ├── storage.js              # Save/load real projects and theme
+│   ├── sample.js               # Resettable StudyBuddy example
+│   └── theme.js                # Device theme and toggle
+├── tests/planner.test.mjs      # Built-in tests for plan calculations
+├── devpost/                    # Canonical Markdown plans + visuals
+└── README.md                   # Setup, run, and test instructions</pre>
+      <p class="muted">The app is split into small files so planning rules, saving, sample data, and screen code are easier to inspect while learning.</p>
+    </section>
+
+    <section class="card">
+      <h2>Run and verify</h2>
+      <p>There are no package downloads, paid services, accounts, or API keys. Python's small built-in server serves the files locally; Node runs the logic tests.</p>
+      <div class="grid">
+        <div class="tile"><h3>Start the app</h3><p>From the project folder, run <code>python -m http.server 8000 --bind 127.0.0.1</code>, then open <code>http://127.0.0.1:8000/</code>.</p><p class="muted">Keep the terminal open and use the same address each visit for saved data.</p></div>
+        <div class="tile"><h3>Run planner tests</h3><p>In another terminal, run <code>node --test tests/planner.test.mjs</code>.</p><p class="muted">Then manually create, edit, refresh, and revisit a project; try invalid inputs, both themes, sample reset, and a narrow mobile window.</p></div>
+      </div>
+      <div class="bar" aria-label="Verification is planned"><span></span></div>
+      <p class="muted">The test steps are part of the build plan. No application has been implemented yet.</p>
+    </section>
+
+    <section class="card">
+      <h2>Decisions and tradeoffs</h2>
+      <details><summary>Why no real AI model in the first demo?</summary><div class="detail"><p>Rules and templates are predictable, work offline, and avoid API setup or cost. The tradeoff is limited pattern recognition. The interface must not call this model-generated.</p></div></details>
+      <details><summary>Where are real projects saved?</summary><div class="detail"><p>In the browser's localStorage, for this browser and website address. That avoids accounts and a backend, but there is no cross-device sync and clearing browser data can remove projects.</p></div></details>
+      <details><summary>What is deliberately outside the first build?</summary><div class="detail"><p>Accounts, collaboration, payment, a complex server, production-scale plans, and broad project types. The first demo proves the main create-plan-track-save experience.</p></div></details>
+    </section>
+
+    <section class="card">
+      <h2>Review the blueprint</h2>
+      <p>The complete details, data shape, failure cases, and references are in <a href="spec.md">spec.md</a>, the canonical technical plan. The approved product requirements remain in <a href="prd.md">prd.md</a>.</p>
+      <div class="notice"><strong>Technical plan approved.</strong> Next, the build checklist will break it into small working slices for review.</div>
+    </section>
+  </main>
+  <footer class="footer"><div class="wrap">ScopeSprint · Devpost Build With AI: Basics · Technical plan for review</div></footer>
+</body>
+</html>

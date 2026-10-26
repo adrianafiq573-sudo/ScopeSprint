@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A visual companion to the ScopeSprint project scope.">
+  <title>ScopeSprint — Project Scope</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #202b3c;
+      --muted: #5d6b7d;
+      --paper: #f6f8fb;
+      --card: #fff;
+      --line: #dce4ed;
+      --blue: #245bd6;
+      --blue-soft: #eaf0ff;
+      --mint: #e8f7f1;
+      --peach: #fff1e8;
+      --shadow: 0 12px 32px rgba(35, 54, 87, .07);
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--paper); color: var(--ink); font: 16px/1.65 system-ui, -apple-system, "Segoe UI", sans-serif; }
+    main { width: min(920px, calc(100% - 32px)); margin: 48px auto 72px; }
+    .eyebrow { color: var(--blue); font-size: .8rem; font-weight: 750; letter-spacing: .11em; text-transform: uppercase; }
+    h1 { margin: 8px 0 10px; font-size: clamp(2.2rem, 6vw, 3.7rem); line-height: 1.08; letter-spacing: -.045em; }
+    h2 { margin: 0; font-size: 1.22rem; line-height: 1.35; }
+    p { margin: 8px 0; }
+    .lead { max-width: 720px; color: var(--muted); font-size: 1.13rem; }
+    .status { display: inline-flex; gap: 8px; align-items: center; margin-top: 14px; padding: 6px 11px; border: 1px solid #f0d4a7; border-radius: 999px; background: #fff8e9; color: #76521b; font-size: .86rem; font-weight: 700; }
+    .status::before { width: 8px; height: 8px; border-radius: 50%; background: #d89628; content: ""; }
+    .card { margin-top: 20px; padding: 24px; border: 1px solid var(--line); border-radius: 18px; background: var(--card); box-shadow: var(--shadow); }
+    .card p:last-child { margin-bottom: 0; }
+    .label { color: var(--muted); font-size: .86rem; }
+    .diagram { overflow-x: auto; margin: 16px 0 4px; padding: 10px 0; }
+    svg { display: block; width: 100%; min-width: 610px; height: auto; }
+    .plain { padding: 14px 16px; border-left: 4px solid var(--blue); border-radius: 0 10px 10px 0; background: var(--blue-soft); }
+    details { margin-top: 12px; border: 1px solid var(--line); border-radius: 13px; background: var(--card); }
+    summary { padding: 15px 18px; cursor: pointer; font-weight: 700; }
+    details[open] summary { border-bottom: 1px solid var(--line); }
+    .detail-body { padding: 14px 18px 18px; color: var(--muted); }
+    .detail-body strong { color: var(--ink); }
+    .pill { display: inline-block; margin: 4px 5px 0 0; padding: 4px 10px; border-radius: 999px; background: var(--mint); color: #176449; font-size: .84rem; font-weight: 650; }
+    .cut { background: var(--peach); color: #8a4a23; }
+    footer { margin-top: 26px; color: var(--muted); font-size: .9rem; }
+    a { color: var(--blue); }
+    @media (max-width: 600px) { main { margin-top: 28px; } .card { padding: 19px; } }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <div class="eyebrow">Project scope · plain-English overview</div>
+      <h1>ScopeSprint</h1>
+      <p class="lead">Turn a beginner’s small web app idea and available time into manageable steps, then keep track of progress.</p>
+      <span class="status">Approved scope</span>
+    </header>
+
+    <section class="card" aria-labelledby="flow-title">
+      <h2 id="flow-title">The idea in one picture</h2>
+      <p class="label">The main journey from a big idea to visible progress</p>
+      <div class="diagram">
+        <svg viewBox="0 0 840 190" role="img" aria-labelledby="diagram-title diagram-desc">
+          <title id="diagram-title">ScopeSprint's core loop</title>
+          <desc id="diagram-desc">A beginner enters a web app idea and time budget. ScopeSprint creates smaller prioritized tasks with completion goals. The beginner edits and completes tasks, and progress is saved in the browser.</desc>
+          <defs>
+            <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#8090a6"/></marker>
+          </defs>
+          <g fill="none" stroke="#8090a6" stroke-width="2.5" marker-end="url(#arrow)">
+            <path d="M205 92H245"/><path d="M405 92H445"/><path d="M605 92H645"/>
+          </g>
+          <g font-family="system-ui, sans-serif" text-anchor="middle">
+            <rect x="10" y="35" width="195" height="114" rx="18" fill="#eaf0ff" stroke="#b9cbfa"/>
+            <text x="107" y="71" fill="#245bd6" font-size="13" font-weight="700">1 · START</text>
+            <text x="107" y="98" fill="#202b3c" font-size="17" font-weight="700">Idea + time</text>
+            <text x="107" y="122" fill="#5d6b7d" font-size="13">What do you want to build?</text>
+
+            <rect x="245" y="35" width="160" height="114" rx="18" fill="#fff" stroke="#dce4ed"/>
+            <text x="325" y="71" fill="#245bd6" font-size="13" font-weight="700">2 · PLAN</text>
+            <text x="325" y="98" fill="#202b3c" font-size="17" font-weight="700">Small steps</text>
+            <text x="325" y="122" fill="#5d6b7d" font-size="13">Priority + done goals</text>
+
+            <rect x="445" y="35" width="160" height="114" rx="18" fill="#fff" stroke="#dce4ed"/>
+            <text x="525" y="71" fill="#245bd6" font-size="13" font-weight="700">3 · DO</text>
+            <text x="525" y="98" fill="#202b3c" font-size="17" font-weight="700">Edit + complete</text>
+            <text x="525" y="122" fill="#5d6b7d" font-size="13">Work through the tasks</text>
+
+            <rect x="645" y="35" width="185" height="114" rx="18" fill="#e8f7f1" stroke="#b6e4d2"/>
+            <text x="737" y="71" fill="#176449" font-size="13" font-weight="700">4 · SEE PROGRESS</text>
+            <text x="737" y="98" fill="#202b3c" font-size="17" font-weight="700">Saved progress</text>
+            <text x="737" y="122" fill="#5d6b7d" font-size="13">Still there after refresh</text>
+          </g>
+        </svg>
+      </div>
+      <p class="plain"><strong>Plain English:</strong> ScopeSprint should help someone answer “What can I do next?” and show them that they’re moving forward.</p>
+    </section>
+
+    <details open>
+      <summary>Who it helps and what makes it different</summary>
+      <div class="detail-body">
+        <p><strong>For:</strong> students and first-time builders working on small, beginner-friendly web app projects.</p>
+        <p><strong>Core idea:</strong> make an overwhelming idea feel achievable by splitting it into prioritized tasks with clear completion goals.</p>
+        <p><strong>When an idea is too big:</strong> suggest a smaller MVP (the smallest useful first version) instead of pretending one beginner can build a production-scale app in the available time.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>What the first version includes</summary>
+      <div class="detail-body">
+        <span class="pill">Idea and time input</span>
+        <span class="pill">Prioritized MVP tasks</span>
+        <span class="pill">Clear completion goals</span>
+        <span class="pill">Editable tasks</span>
+        <span class="pill">Completion checkboxes</span>
+        <span class="pill">Progress indicator</span>
+        <span class="pill">Browser saving</span>
+        <span class="pill">Useful sample project</span>
+        <p>Keep the app simple and responsive so the main flow is easy to follow on different screen sizes.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>What stays out of the first version</summary>
+      <div class="detail-body">
+        <span class="pill cut">Production-scale social network or Uber clone</span>
+        <span class="pill cut">Complex backend system</span>
+        <span class="pill cut">Payment processing</span>
+        <p>These would make the project much larger without helping prove the core idea. Broader project types can be reconsidered later.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>What counts as “working”</summary>
+      <div class="detail-body">
+        <p>In a short screen demo, a beginner enters a small web app idea and available time, sees a prioritized plan with clear completion goals, completes a few tasks, and sees progress update and stay saved after a page refresh. An oversized idea should produce a smaller MVP suggestion.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>Important decisions still to make later</summary>
+      <div class="detail-body">
+        <p>This scope describes <em>what</em> the app should help someone do. The technical plan will decide <em>how</em> plan generation works. We should not describe the app as using a real AI model unless one is actually connected. A backend or paid API should only be considered if the technical plan shows it is essential.</p>
+        <p>No visual inspiration has been chosen yet; that can be explored during product planning.</p>
+      </div>
+    </details>
+
+    <footer>
+      Markdown is the source of truth: <code>devpost/scope.md</code>. This visual page is a companion to help explain the same plan.
+    </footer>
+  </main>
+</body>
+</html>
