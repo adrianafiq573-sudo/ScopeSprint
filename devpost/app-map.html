@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ScopeSprint — Code Map</title>
+  <style>
+    :root { color-scheme: light; --bg:#F8F4EC; --paper:#FFFDF8; --raised:#EDE3D4; --ink:#342F29; --muted:#665C50; --line:#D9CBB8; --accent:#9D5E45; --sage:#687A5D; --shadow:0 12px 30px rgb(67 51 31 / 7%); font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif; color:var(--ink); background:var(--bg); }
+    * { box-sizing:border-box; } body { margin:0; background:var(--bg); color:var(--ink); line-height:1.6; }
+    .wrap { width:min(1040px,calc(100% - 32px)); margin:0 auto; padding:34px 0 60px; }
+    .topline { color:var(--sage); font-size:.76rem; font-weight:800; letter-spacing:.12em; text-transform:uppercase; }
+    h1 { margin:.3rem 0 .6rem; font-size:clamp(2rem,6vw,3.4rem); letter-spacing:-.055em; line-height:1.08; }
+    h2 { margin:.2rem 0 .75rem; font-size:1.25rem; letter-spacing:-.025em; } h3 { margin:.1rem 0 .35rem; font-size:1rem; }
+    p { margin:.35rem 0 .8rem; color:var(--muted); } .intro { max-width:710px; font-size:1.05rem; }
+    .card { margin:20px 0; border:1px solid var(--line); border-radius:18px; padding:20px; background:var(--paper); box-shadow:var(--shadow); }
+    .flow { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); align-items:stretch; gap:25px; margin:16px 0 10px; }
+    .node { position:relative; min-height:118px; border:1px solid var(--line); border-radius:14px; padding:13px; background:var(--paper); }
+    .node:not(:last-child)::after { content:"→"; position:absolute; top:38%; right:-21px; color:var(--accent); font-size:1.2rem; font-weight:800; }
+    .node strong { display:block; } .node small { color:var(--muted); }
+    .branch { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:14px; }
+    .branch > div { border:1px dashed var(--line); border-radius:13px; padding:13px; background:var(--raised); }
+    .tag { display:inline-block; margin-bottom:5px; border-radius:99px; padding:2px 8px; background:var(--raised); color:var(--ink); font-size:.72rem; font-weight:800; }
+    .modules { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+    details.module { border:1px solid var(--line); border-radius:13px; background:var(--paper); }
+    details.module summary { cursor:pointer; padding:13px 15px; font-weight:800; }
+    details.module summary:focus-visible, a:focus-visible { outline:3px solid var(--sage); outline-offset:3px; }
+    .module-body { padding:0 15px 14px; } .module-body p { margin:.3rem 0; }
+    code { border-radius:5px; padding:1px 5px; background:var(--raised); color:var(--ink); font-size:.9em; }
+    a { color:var(--accent); font-weight:700; text-underline-offset:3px; }
+    .route { counter-reset:stop; display:grid; gap:10px; padding:0; list-style:none; }
+    .route li { counter-increment:stop; display:grid; grid-template-columns:34px 1fr; gap:10px; align-items:start; }
+    .route li::before { content:counter(stop); display:grid; width:30px; height:30px; place-items:center; border-radius:50%; background:var(--raised); font-weight:800; }
+    .practice { border-left:4px solid var(--sage); background:var(--raised); box-shadow:none; }
+    .practice ol { margin:.4rem 0; padding-left:22px; } .practice li { margin:.35rem 0; }
+    .footer { margin-top:26px; border-top:1px solid var(--line); padding-top:16px; color:var(--muted); font-size:.85rem; }
+    @media(max-width:700px) { .flow { grid-template-columns:1fr 1fr; gap:12px; } .node:not(:last-child)::after { content:"↓"; top:auto; right:10px; bottom:-19px; z-index:1; } .modules { grid-template-columns:1fr; } }
+    @media(max-width:420px) { .flow,.branch { grid-template-columns:1fr; } .node { min-height:auto; } .node:not(:last-child)::after { content:"↓"; right:12px; bottom:-18px; } .card { padding:16px; } }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <p class="topline">A beginner's map of the code</p>
+    <h1>How ScopeSprint works</h1>
+    <p class="intro">Think of <code>app.js</code> as the traffic guide: it receives a click, asks the right helper module to do the work, then redraws the screen. The diagram shows the path a project follows.</p>
+
+    <section class="card" aria-labelledby="flow-heading">
+      <h2 id="flow-heading">The main path</h2>
+      <div class="flow" role="img" aria-label="Idea form flows to planner rules, then to the project screen, then to browser storage for real projects">
+        <div class="node"><span class="tag">1 · Input</span><strong>Dashboard form</strong><small><code>app.js</code> checks the name, idea, and hours.</small></div>
+        <div class="node"><span class="tag">2 · Decide</span><strong>Plan rules</strong><small><code>planner.js</code> picks a template and fits tasks to time.</small></div>
+        <div class="node"><span class="tag">3 · Show</span><strong>Project plan</strong><small><code>app.js</code> draws stages, criteria, and progress.</small></div>
+        <div class="node"><span class="tag">4 · Keep</span><strong>Browser storage</strong><small><code>storage.js</code> remembers real projects on this browser.</small></div>
+      </div>
+      <div class="branch">
+        <div><span class="tag">Real project</span><p>Checking, renaming, or adding a task changes the project's data and saves that project by its unique ID.</p></div>
+        <div><span class="tag">Sample demo</span><p>StudyBuddy starts from <code>sample.js</code>'s original data. Demo clicks stay in memory and skip the real-project save step.</p></div>
+      </div>
+    </section>
+
+    <section class="card" aria-labelledby="modules-heading">
+      <h2 id="modules-heading">Open a code area to learn its job</h2>
+      <div class="modules">
+        <details class="module"><summary>Screen and actions · <code>js/app.js</code></summary><div class="module-body">
+          <p><code>renderDashboard()</code> draws the form, sample preview, recent project, and saved project cards. Form submission calls <code>buildPlan()</code>, saves the result, and opens it.</p>
+          <p><code>renderPlan()</code> draws the plan and connects the checkbox, edit-title, edit-name, and add-task controls. <code>isSample</code> decides whether changes may be saved.</p>
+          <p>Useful route: <a href="../js/app.js">open app.js</a></p>
+        </div></details>
+        <details class="module"><summary>Planning rules and math · <code>js/planner.js</code></summary><div class="module-body">
+          <p><code>validateProjectInput()</code> rejects blank names or ideas and non-positive hours. <code>chooseTemplate()</code> looks for a supported keyword pattern, then uses the general plan when none matches.</p>
+          <p><code>buildPlan()</code> keeps estimates in minutes, includes core tasks first, and explains postponed features. <code>calculateProgress()</code> counts checked tasks instead of storing a separate percentage.</p>
+          <p>Useful route: <a href="../js/planner.js">open planner rules</a></p>
+        </div></details>
+        <details class="module"><summary>Saved projects · <code>js/storage.js</code></summary><div class="module-body">
+          <p><code>loadProjects()</code> reads the saved list. <code>saveProject()</code> finds one project by ID and replaces only that entry; the recent-project pointer uses a separate storage key.</p>
+          <p>This is local to the current browser and website address, so it does not sync to another device.</p>
+          <p>Useful route: <a href="../js/storage.js">open storage helpers</a></p>
+        </div></details>
+        <details class="module"><summary>Sample and theme · <code>js/sample.js</code>, <code>js/theme.js</code>, <code>styles.css</code></summary><div class="module-body">
+          <p><code>createSampleProject()</code> returns a fresh copy each time. The theme helper reads the device setting first, then remembers a manual choice. CSS variables recolor the whole interface.</p>
+          <p>Useful routes: <a href="../js/sample.js">sample data</a>, <a href="../js/theme.js">theme behavior</a>, <a href="../styles.css">color and layout rules</a></p>
+        </div></details>
+        <details class="module"><summary>Checks · <code>tests/</code></summary><div class="module-body">
+          <p>Planner tests check input and plan rules; storage tests use a small pretend browser store; sample tests confirm every demo starts fresh; theme tests check saved choice versus device preference.</p>
+          <p>Run them from the project folder with <code>node --test tests/planner.test.mjs tests/storage.test.mjs tests/sample.test.mjs tests/theme.test.mjs</code>.</p>
+        </div></details>
+      </div>
+    </section>
+
+    <section class="card" aria-labelledby="route-heading">
+      <h2 id="route-heading">A short code tour</h2>
+      <ol class="route">
+        <li><div><strong>Start at <code>index.html</code>.</strong> The page has one empty <code>#app</code> space. JavaScript fills that space; the theme button stays in the page header.</div></li>
+        <li><div><strong>Follow the form in <code>app.js</code>.</strong> It validates the entries, then asks <code>planner.js</code> for a plan.</div></li>
+        <li><div><strong>Follow one checkbox.</strong> The task's <code>completed</code> value changes. Progress is calculated from all task values, then the view is redrawn.</div></li>
+        <li><div><strong>Check which kind of plan is open.</strong> A real project calls <code>rememberProject()</code>; the StudyBuddy demo skips it, so Reset Demo can make a clean copy.</div></li>
+        <li><div><strong>Follow the theme button.</strong> <code>theme.js</code> changes one page attribute; <code>styles.css</code> swaps semantic color variables to update every surface.</div></li>
+      </ol>
+    </section>
+
+    <section class="card practice" aria-labelledby="practice-heading">
+      <h2 id="practice-heading">Practice you can reuse in your next project</h2>
+      <p>Try a small data change and let a test tell you whether the behavior still matches your intention.</p>
+      <ol>
+        <li>In <code>js/sample.js</code>, add one beginner-sized task to the Test &amp; Polish stage. Give it a unique ID, title, description, completion goal, estimate, priority, and <code>completed: false</code>.</li>
+        <li>In <code>tests/sample.test.mjs</code>, update the expected task count from 6 to 7.</li>
+        <li>Run the test command above. See how the progress calculation includes the new task without editing the screen or storage code.</li>
+      </ol>
+      <p>If you try this, keep the edit if the test passes and you can see the added task in the demo; otherwise undo the change and inspect the test output first.</p>
+    </section>
+    <p class="footer">ScopeSprint uses transparent rules and templates. It does not call a real AI model. Start with a small change, check the result, then move on.</p>
+  </main>
+</body>
+</html>
