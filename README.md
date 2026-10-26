@@ -17,7 +17,7 @@ Open <http://127.0.0.1:8000/> and leave the terminal running while you use the a
 Node.js 24 can run the built-in test runner without downloading packages:
 
 ```powershell
-node --test tests/planner.test.mjs
+node --test tests/planner.test.mjs tests/storage.test.mjs
 ```
 
 There are no package installs, external APIs, or environment keys for this demo.
@@ -27,3 +27,5 @@ There are no package installs, external APIs, or environment keys for this demo.
 - `devpost/scope.md`, `devpost/prd.md`, and `devpost/spec.md` are the Markdown planning sources of truth.
 - `devpost/checklist.md` tracks the approved build order and slice progress.
 - The implementation is being built in small verified slices; some planned behaviors may arrive in later slices.
+- Real projects and their edits are saved in this browser's local storage. They do not sync across browsers or devices. The demo uses temporary data and stays separate from saved projects.
+- The first editable-plan slice supports changing the project name, renaming and adding tasks, and updating task completion. More complete project-management controls are intentionally out of scope.

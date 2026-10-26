@@ -115,12 +115,15 @@ export function buildPlan({ name, ideaText, hours }) {
       estimatedMinutes: task.estimatedMinutes,
       completed: false
     }))
-  })).filter((stage) => stage.tasks.length > 0);
+  }));
 
+  const now = new Date().toISOString();
   return {
     id: `project-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
     name: values.name,
     ideaText: String(ideaText),
+    createdAt: now,
+    updatedAt: now,
     availableMinutes,
     templateKey: chosen.key,
     narrowed,

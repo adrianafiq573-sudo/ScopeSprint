@@ -9,24 +9,24 @@ Build mode: learn
 
 ## Slices
 
-- [ ] **1. Create an idea and see its scoped plan**
+- [x] **1. Create an idea and see its scoped plan**
   Becomes usable: A running dashboard accepts a valid project name, idea, and positive hours value and opens a staged MVP plan. Invalid fields stay on the dashboard with clear messages. The plan shows task details, estimates, progress, and the narrowing explanation when needed; checking a task updates progress for the current visit.
   Why now: This proves ScopeSprint's unique idea-to-manageable-plan journey early. The basic app setup is included in this working behavior, not delivered as an empty scaffold.
   PRD ref: `prd.md > The Core Journey`, `prd.md > Dashboard and Project Creation`, `prd.md > Project Task Plan`
   Spec ref: `spec.md > How This Works, In Plain Language`, `spec.md > Rules-based planner`, `spec.md > Project plan and task interactions`, `spec.md > File Structure`
   Build: Create the static HTML/CSS/JavaScript app and local run instructions; implement trimmed form validation, curated keyword templates with a generic fallback, minute-based budget checks and honest too-small-budget warnings, staged task display, expandable details, estimates, and in-session task checkboxes that recalculate progress.
-  Verify (mechanical): Run `node --check js/app.js` and `node --test tests/planner.test.mjs`; both passed (nine planner tests). Browser verification is pending: the user reports the server banner appears, but Windows `Test-NetConnection 127.0.0.1 -Port 8000` returned `TcpTestSucceeded: False`. The user notes WSL is running; confirm whether the server and browser are using different environments, then verify the local page and check for browser console errors.
-  Learner check: Pending a reachable preview. Enter a small app idea and a positive decimal hours budget, submit it, inspect the task stages, and check a task to see progress update. Then try a very small budget and an unmatched idea; confirm the app gives a clear fallback or time warning. Try blank/invalid fields and confirm nothing navigates or gets erased. Progress is only for this visit until Slice 2 adds saving.
+  Verify (mechanical): `node --check js/app.js` and all nine planner tests pass. Browser smoke check: a 2.5-hour assignment-planner idea produced six ordered tasks and an honest three-hour core-plan warning; checking the first task changed progress from 0% to 17%. Submitting a whitespace-only name and zero hours displayed both inline errors and preserved the entered description. The learner later confirmed the refreshed preview and main flow worked.
+  Learner check: Complete. The learner confirmed the preview worked; Slice 2 now adds saving for real projects.
   Commit: `Build the idea-to-plan journey`
 
-- [ ] **2. Edit a plan and find it again later**
+- [x] **2. Edit a plan and find it again later**
   Becomes usable: A real project can be renamed, its task titles changed, tasks added to a chosen stage, and tasks checked or unchecked; progress updates immediately and project changes survive refresh.
   Why now: Once the core plan is visible, this proves the promised beginner feedback loop and the first consequential data boundary: one user's projects save separately from each other.
   PRD ref: `prd.md > The Core Journey`, `prd.md > Project Task Plan`, `prd.md > Dashboard and Project Creation`, `prd.md > States and Boundaries`
   Spec ref: `spec.md > Project plan and task interactions`, `spec.md > Browser storage and theme`, `spec.md > Data Model`, `spec.md > Important Failure Modes`
   Build: Add per-project browser saving and dashboard reload; implement project-name editing, task-title editing, completion toggles, progress/stage counts, and the custom-task form. Custom tasks require a title and stage (Plan by default), allow optional description and positive estimate with minute/hour choice, need no completion criteria, append to the selected stage, start incomplete, and save only with the current project.
-  Verify (mechanical): Run `node --test tests/planner.test.mjs`; include checks for progress after adding/checking a task and separate project updates. In the browser, create two projects, edit and add tasks in only one, refresh, and confirm changes and counts return only on that project.
-  Learner check: Add a task to Build, leave its description and estimate blank, and confirm it appears last in Build and starts unchecked. Complete a task, refresh, and reopen the same project; compare its saved progress with the other project.
+  Verify (mechanical): `node --check js/app.js`, `node --check js/planner.js`, and `node --check js/storage.js` pass; all 12 planner and storage tests pass; `git diff --check` reports no whitespace errors. The learner confirmed the local browser flow works after creating/editing a task and refreshing.
+  Learner check: Complete. The learner confirmed the updated app worked in their browser, including the Slice 2 project-editing and persistence flow.
   Commit: `Save and edit project plans`
 
 - [ ] **3. Explore the isolated sample and switch themes**
@@ -41,7 +41,7 @@ Build mode: learn
 
 ## Hands-on Checkpoints
 
-- [ ] Early usable behavior explored — after Slice 1, while remaining implementation can still respond to feedback
+- [x] Early usable behavior explored — after Slice 1, while remaining implementation can still respond to feedback
 - [ ] Final kick-the-tires exploration and feedback completed — after Slice 3
 
 ## Final Review
