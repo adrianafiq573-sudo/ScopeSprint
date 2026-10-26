@@ -1,8 +1,11 @@
 import { buildPlan, calculateProgress, flattenTasks, formatEstimate, validateProjectInput, STAGES } from "./planner.js";
 import { getRecentProjectId, loadProjects, saveProject, setRecentProjectId } from "./storage.js";
+import { createSampleProject } from "./sample.js";
+import { setupThemeToggle } from "./theme.js";
 
 const app = document.querySelector("#app");
 let currentProject = null;
+let isSample = false;
 let formState = { name: "", ideaText: "", hours: "" };
 let savedState = loadProjects();
 let projects = savedState.projects;
@@ -90,7 +93,8 @@ function renderDashboard() {
           <div class="preview-content"><div class="preview-project"><span class="preview-icon" aria-hidden="true">✳</span><div><strong>StudyBuddy</strong><span>A sample student planner</span></div></div>
             <div class="progress-heading"><span>Project progress</span><span>2 of 6 tasks</span></div><div class="progress-track" aria-hidden="true"><div class="progress-fill"></div></div>
             <div class="mini-task"><span class="mini-check done" aria-hidden="true">✓</span><span>Sketch the main planner screen</span></div><div class="mini-task"><span class="mini-check" aria-hidden="true"></span><span>Add an assignment to the list</span></div>
-            <div><span class="stage-pill">Plan</span><span class="stage-pill">Build</span><span class="stage-pill">Test &amp; Polish</span></div></div>
+            <div><span class="stage-pill">Plan</span><span class="stage-pill">Build</span><span class="stage-pill">Test &amp; Polish</span></div>
+            <button class="button button-full" id="explore-sample" type="button">Explore Sample Project</button></div>
         </section>
         <section class="panel note-panel"><h3>Built for first versions</h3><p>Plans use clear, approximate estimates and put essential steps first. If an idea is too big, ScopeSprint helps you choose a smaller MVP.</p></section>
       </aside>
@@ -109,6 +113,7 @@ function renderDashboard() {
     for (const key of Object.keys(inputs)) updateFieldError(key, errors[key]);
     if (Object.keys(errors).length) { form.querySelector("[aria-invalid='true']")?.focus(); return; }
     currentProject = buildPlan(formState);
+    isSample = false;
     rememberProject(currentProject);
     setRecentProjectId(currentProject.id);
     renderPlan();
@@ -116,9 +121,15 @@ function renderDashboard() {
   app.querySelectorAll("[data-open-project]").forEach((button) => button.addEventListener("click", () => {
     currentProject = projects.find((project) => project.id === button.dataset.openProject) ?? null;
     if (!currentProject) return;
+    isSample = false;
     setRecentProjectId(currentProject.id);
     renderPlan();
   }));
+  app.querySelector("#explore-sample").addEventListener("click", () => {
+    currentProject = createSampleProject();
+    isSample = true;
+    renderPlan();
+  });
 }
 
 function updateFieldError(key, message) {
@@ -150,36 +161,37 @@ function renderPlan(expandedStages, editingTaskId = null) {
     const stageProgress = calculateProgress(stage.tasks);
     const cards = stage.tasks.map((task) => `<article class="task-card ${task.completed ? "is-complete" : ""}">
       <input class="task-check" type="checkbox" data-stage="${escapeHtml(stage.id)}" data-task="${escapeHtml(task.id)}" ${task.completed ? "checked" : ""} aria-label="Mark ${escapeHtml(task.title)} complete">
-      <div class="task-main">${editingTaskId === task.id ? `<form class="task-edit-form" data-edit-task="${escapeHtml(task.id)}"><label class="sr-only" for="edit-${escapeHtml(task.id)}">Task title</label><input id="edit-${escapeHtml(task.id)}" name="title" value="${escapeHtml(task.title)}" required><button class="small-button" type="submit">Save</button><button class="text-button small-text-button" type="button" data-cancel-edit>Cancel</button><p class="field-error" data-title-error role="alert" hidden></p></form>` : `<div class="task-heading"><h3 class="task-title">${escapeHtml(task.title)}</h3><button class="task-action" type="button" data-edit-title="${escapeHtml(task.id)}">Edit title</button></div>`}
+      <div class="task-main">${task.priority ? `<div class="sample-task-topline"><span class="priority-pill" data-priority="${escapeHtml(task.priority)}">${escapeHtml(task.priority)} priority</span></div>` : ""}
+        ${isSample ? `<h3 class="task-title">${escapeHtml(task.title)}</h3>` : editingTaskId === task.id ? `<form class="task-edit-form" data-edit-task="${escapeHtml(task.id)}"><label class="sr-only" for="edit-${escapeHtml(task.id)}">Task title</label><input id="edit-${escapeHtml(task.id)}" name="title" value="${escapeHtml(task.title)}" required><button class="small-button" type="submit">Save</button><button class="text-button small-text-button" type="button" data-cancel-edit>Cancel</button><p class="field-error" data-title-error role="alert" hidden></p></form>` : `<div class="task-heading"><h3 class="task-title">${escapeHtml(task.title)}</h3><button class="task-action" type="button" data-edit-title="${escapeHtml(task.id)}">Edit title</button></div>`}
         ${task.description ? `<p class="task-description">${escapeHtml(task.description)}</p>` : ""}
         ${task.completionCriteria ? `<details class="task-details"><summary>See completion goal</summary><p class="task-criteria">${escapeHtml(task.completionCriteria)}</p></details>` : ""}</div>
       <span class="task-time">${task.estimatedMinutes ? escapeHtml(formatEstimate(task.estimatedMinutes)) : "No estimate"}</span></article>`).join("");
     return `<details class="panel stage" data-stage-section="${escapeHtml(stage.id)}" ${openStageIds.has(stage.id) ? "open" : ""}><summary><span class="stage-title">${escapeHtml(stage.name)}<span class="stage-count">${stageProgress.completed} of ${stageProgress.total} complete</span></span></summary><div class="stage-tasks">${cards || `<p class="empty-stage">No tasks yet. Add one below.</p>`}</div></details>`;
   }).join("");
 
-  app.innerHTML = `${storageNoticeMarkup()}<div class="plan-header"><button class="text-button" id="back-to-dashboard" type="button">← Back to Dashboard</button><div><p class="eyebrow">Your first version, step by step</p><h1>${escapeHtml(currentProject.name)}</h1></div></div>
-    <section class="panel plan-summary" aria-label="Project overview and progress"><div><div class="project-name-edit"><h2>Project name</h2><button class="task-action" id="edit-project-name" type="button">Edit name</button></div><p class="idea-verbatim">${escapeHtml(currentProject.ideaText)}</p><form id="project-name-form" class="inline-name-form" hidden><label for="new-project-name">Project name</label><input id="new-project-name" name="name" value="${escapeHtml(currentProject.name)}" required><button class="small-button" type="submit">Save name</button><button class="text-button small-text-button" type="button" data-cancel-name>Cancel</button><p class="field-error" id="project-name-error" role="alert" hidden></p></form></div>
+  app.innerHTML = `${storageNoticeMarkup()}<div class="plan-header"><button class="text-button" id="back-to-dashboard" type="button">← Back to Dashboard</button><div>${isSample ? `<span class="sample-badge">SAMPLE / DEMO</span>` : `<p class="eyebrow">Your first version, step by step</p>`}<h1>${escapeHtml(currentProject.name)}</h1></div></div>
+    <section class="panel plan-summary" aria-label="Project overview and progress"><div>${isSample ? `<h2>Project overview</h2>` : `<div class="project-name-edit"><h2>Project name</h2><button class="task-action" id="edit-project-name" type="button">Edit name</button></div>`}<p class="idea-verbatim">${escapeHtml(currentProject.ideaText)}</p>${isSample ? `<p class="sample-goal"><strong>MVP goal:</strong> ${escapeHtml(currentProject.sampleGoal)}</p>` : `<form id="project-name-form" class="inline-name-form" hidden><label for="new-project-name">Project name</label><input id="new-project-name" name="name" value="${escapeHtml(currentProject.name)}" required><button class="small-button" type="submit">Save name</button><button class="text-button small-text-button" type="button" data-cancel-name>Cancel</button><p class="field-error" id="project-name-error" role="alert" hidden></p></form>`}</div>
       <div class="plan-progress"><div class="progress-heading"><strong>Overall progress</strong><span>${progress.percent}%</span></div><div class="progress-track" role="progressbar" aria-label="Overall task progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${progress.percent}"><div class="progress-fill" style="width:${progress.percent}%"></div></div><div class="plan-progress-note">${progress.completed} of ${progress.total} tasks completed · time estimates are approximate</div></div></section>
-    ${renderScopeSection(currentProject)}<p class="plan-note">Work through the stages in order. Check a task when its completion goal is met.</p>
+    ${isSample ? `<section class="panel sample-overview"><h2>How this first version helps</h2><p>This small plan focuses on adding and finishing assignments first. More advanced planner features can wait until the core list is useful.</p></section><div class="sample-actions"><button class="button" id="reset-demo" type="button">Reset Demo</button><button class="button" id="create-own-project" type="button">Create My Own Project <span aria-hidden="true">→</span></button></div>` : renderScopeSection(currentProject)}<p class="plan-note">Work through the stages in order. Check a task when its completion goal is met.</p>
     <section aria-label="Project stages">${stages}</section>
-    <section class="panel add-task-panel" aria-labelledby="add-task-heading"><h2 id="add-task-heading">Add a task</h2><p class="panel-intro">New tasks start incomplete and appear at the end of their stage.</p><form id="add-task-form" novalidate>
+    ${isSample ? "" : `<section class="panel add-task-panel" aria-labelledby="add-task-heading"><h2 id="add-task-heading">Add a task</h2><p class="panel-intro">New tasks start incomplete and appear at the end of their stage.</p><form id="add-task-form" novalidate>
       <div class="field"><label for="new-task-title">Task title</label><input id="new-task-title" name="title" placeholder="e.g. Add a clear empty state" required aria-describedby="new-task-title-error"><p class="field-error" id="new-task-title-error" role="alert" hidden></p></div>
       <div class="field"><label for="new-task-stage">Stage</label><select id="new-task-stage" name="stage">${STAGES.map((name) => `<option value="${escapeHtml(name)}">${escapeHtml(name)}</option>`).join("")}</select></div>
       <div class="field"><label for="new-task-description">Description <span class="optional-label">(optional)</span></label><textarea id="new-task-description" name="description" placeholder="What should you do?"></textarea></div>
       <div class="field"><label for="new-task-estimate">Estimated time <span class="optional-label">(optional)</span></label><div class="input-unit"><input id="new-task-estimate" name="estimate" type="number" min="0.01" step="any" placeholder="e.g. 30"><select name="unit" aria-label="Estimate unit"><option value="minutes">minutes</option><option value="hours">hours</option></select></div><p class="field-error" id="new-task-estimate-error" role="alert" hidden></p></div>
-      <button class="button" type="submit">Add Task</button></form></section>
+      <button class="button" type="submit">Add Task</button></form></section>`}
     <div class="plan-footer-action"><button class="text-button" id="plan-back-to-dashboard" type="button">← Back to Dashboard</button></div>`;
 
   const currentOpenIds = () => new Set([...app.querySelectorAll(".stage[open]")].map((element) => element.dataset.stageSection));
   const saveAndRender = () => { rememberProject(currentProject); renderPlan(currentOpenIds()); };
-  const back = () => { currentProject = null; renderDashboard(); app.focus(); };
+  const back = () => { currentProject = null; isSample = false; renderDashboard(); app.focus(); };
   app.querySelectorAll("#back-to-dashboard, #plan-back-to-dashboard").forEach((button) => button.addEventListener("click", back));
   app.querySelectorAll(".task-check").forEach((checkbox) => checkbox.addEventListener("change", () => {
     const stage = currentProject.stages.find((item) => item.id === checkbox.dataset.stage);
     const task = stage?.tasks.find((item) => item.id === checkbox.dataset.task);
     if (!task) return;
     task.completed = checkbox.checked;
-    rememberProject(currentProject);
+    if (!isSample) rememberProject(currentProject);
     renderPlan(currentOpenIds());
   }));
   app.querySelectorAll("[data-edit-title]").forEach((button) => button.addEventListener("click", () => renderPlan(currentOpenIds(), button.dataset.editTitle)));
@@ -194,11 +206,11 @@ function renderPlan(expandedStages, editingTaskId = null) {
     task.title = title;
     saveAndRender();
   }));
-  app.querySelector("#edit-project-name").addEventListener("click", () => {
+  app.querySelector("#edit-project-name")?.addEventListener("click", () => {
     const form = app.querySelector("#project-name-form"); form.hidden = false; form.elements.name.focus();
   });
-  app.querySelector("[data-cancel-name]").addEventListener("click", () => { app.querySelector("#project-name-form").hidden = true; });
-  app.querySelector("#project-name-form").addEventListener("submit", (event) => {
+  app.querySelector("[data-cancel-name]")?.addEventListener("click", () => { app.querySelector("#project-name-form").hidden = true; });
+  app.querySelector("#project-name-form")?.addEventListener("submit", (event) => {
     event.preventDefault();
     const form = event.currentTarget;
     const name = form.elements.name.value.trim();
@@ -207,7 +219,7 @@ function renderPlan(expandedStages, editingTaskId = null) {
     currentProject.name = name;
     saveAndRender();
   });
-  app.querySelector("#add-task-form").addEventListener("submit", (event) => {
+  app.querySelector("#add-task-form")?.addEventListener("submit", (event) => {
     event.preventDefault();
     const form = event.currentTarget;
     const title = form.elements.title.value.trim();
@@ -233,6 +245,9 @@ function renderPlan(expandedStages, editingTaskId = null) {
     rememberProject(currentProject);
     renderPlan(new Set([...currentOpenIds(), stage.id]));
   });
+  app.querySelector("#reset-demo")?.addEventListener("click", () => { currentProject = createSampleProject(); isSample = true; renderPlan(); });
+  app.querySelector("#create-own-project")?.addEventListener("click", () => { currentProject = null; isSample = false; renderDashboard(); app.querySelector("#project-name")?.focus(); });
 }
 
+setupThemeToggle();
 renderDashboard();

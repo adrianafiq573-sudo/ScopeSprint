@@ -29,20 +29,20 @@ Build mode: learn
   Learner check: Complete. The learner confirmed the updated app worked in their browser, including the Slice 2 project-editing and persistence flow.
   Commit: `Save and edit project plans`
 
-- [ ] **3. Explore the isolated sample and switch themes**
+- [x] **3. Explore the isolated sample and switch themes**
   Becomes usable: StudyBuddy is interactive but resets to its original state whenever opened; the theme follows the device until changed, then remembers the choice; the full app works on a narrow mobile screen.
   Why now: The main journey and saved-data boundary are already working. This adds the demo and final visual behavior without putting temporary demo edits at risk of entering real-project storage.
   PRD ref: `prd.md > Interactive StudyBuddy Sample`, `prd.md > StudyBuddy Sample Plan`, `prd.md > Theme and Responsive Use`, `prd.md > Look and Feel`
   Spec ref: `spec.md > StudyBuddy sample`, `spec.md > Browser storage and theme`, `spec.md > Look and Feel`, `spec.md > Important Failure Modes`
   Build: Add StudyBuddy's original sample data and reset/reopen behavior, sample navigation actions, system/manual theme handling, semantic palette variables, responsive layout, and readable keyboard, hover, error, disabled, and completed states.
-  Verify (mechanical): Run `node --test tests/planner.test.mjs`. Start the app and manually exercise demo reset/reopen, theme toggle/reload, project-versus-sample storage isolation, field errors, keyboard focus, and narrow-screen layout; confirm no console errors.
-  Learner check: Mark a StudyBuddy task complete, reset and reopen the sample, then check that it is back at zero and your own project is untouched. Switch theme, reload, and inspect the dashboard, plan, and sample in both palettes on a mobile-width window.
+  Verify (mechanical): `node --check` passes for the app, planner, storage, sample, and theme modules; all 16 planner, storage, sample-reset, and theme-choice tests pass; `git diff --check` reports no whitespace errors. The learner confirmed the StudyBuddy demo, reset, saved-project isolation, and theme behavior work in the browser.
+  Learner check: Complete. The learner confirmed the sample, reset behavior, project storage, and theme switch work as expected.
   Commit: `Add the resettable sample and responsive themes`
 
 ## Hands-on Checkpoints
 
 - [x] Early usable behavior explored — after Slice 1, while remaining implementation can still respond to feedback
-- [ ] Final kick-the-tires exploration and feedback completed — after Slice 3
+- [x] Final kick-the-tires exploration and feedback completed — after Slice 3
 
 ## Final Review
 
